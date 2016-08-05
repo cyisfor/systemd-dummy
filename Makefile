@@ -6,6 +6,6 @@ all: ./make
 
 clean: ./make
 	clean=1 ./make
-	rm -f make
+	rm -f make make.o
 
 make: make.o

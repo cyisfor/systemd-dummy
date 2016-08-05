@@ -13,27 +13,36 @@
 #define longname soname ".0.0"
 
 void build_lib(void) {
-	if(getenv("clean")) {
-		unlink(longname) || puts("UNLINK " longname);
-		return;
-	}
 	const char* cc = getenv("CC");
 	if(cc == NULL) cc = "cc";
-	puts("BUILD " longname);
-	execlp(cc,cc,
-				 "-Wl,--version-script,systemdsux.version",
-				 "-ggdb",
-				 "-shared",
-				 "-Wl,-soname," longname,
-				 "-fpic",
-				 "-o",
-				 soname,
-				 "lib.c");
+	puts("BUILD " soname);
+	int pid = fork();
+	if(pid == 0) {
+		execlp(cc,cc,
+					 "-Wl,--version-script,systemdsux.version",
+					 "-ggdb",
+					 "-shared",
+					 "-Wl,-soname," longname,
+					 "-fpic",
+					 "-o",
+					 soname,
+					 "lib.c");
+		error(23,errno,"wat");
+	}
+	int status;
+	waitpid(pid,&status,0);
+	if(!WIFEXITED(status) || 0 != WEXITSTATUS(status))
+		exit(status);
 }
 
 void build_stuff(void) {
+	if(getenv("clean")) {
+		unlink(soname) || puts("UNLINK " soname);
+		return;
+	}
+
 	struct stat target, dep;
-	if(0!=stat(soname,&target)) {
+	if(0==stat(soname,&target)) {
 		assert(0==stat("lib.c",&dep));
 		if(dep.st_mtime > target.st_mtime) {
 			build_lib();
@@ -79,7 +88,8 @@ int main(void)
 		waitpid(builder,NULL,0);
 	} else {
 		build_stuff();
-		puts("run this as root to install: prefix=/usr/lib ./make");
+		if(!getenv("clean"))
+			puts("run this as root to install: prefix=/usr/lib ./make");
 		return 0;
 	}
 	// we're still root
