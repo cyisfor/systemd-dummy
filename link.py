@@ -9,7 +9,7 @@ myexec(cc,
      "-Wl,--version-script,systemdsux.version",
      "-ggdb",
      "-shared",
-     "-Wl,-soname,longname,"+target,
+     "-Wl,-soname,"+target,
      "-fpic",
      "-o",target,source)
 
