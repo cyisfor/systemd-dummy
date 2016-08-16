@@ -19,21 +19,7 @@ $(prefix)/lib%.so.0: $(prefix)/lib%.so.0.0
 $(prefix)/lib%.so.0.0: lib%.so.0.0
 	install $< $@
 
-define LINK =
-	$(CC) -Wl,--version-script,systemdsux.version 
-					 -ggdb	
-					 -shared 
-					 -Wl,-son ame, longname, 
-					 -fpic
-					 -o $@
-				   $^
-endef
-
-define \n
-
-endef
-
-LINK:=$(subst ${\n}, ,$(LINK))
-
+name:=derp
+export CC
 lib%.so.0.0: %.c
-	$(LINK)
+	exec python ./link.py $@ $^
