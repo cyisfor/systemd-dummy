@@ -24,4 +24,4 @@ export CC
 lib%.so.0.0: %.c
 	exec python ./link.py $@ $^
 
-.PRECIOUS: lib%.so.0.0
+.PRECIOUS: lib%.so.0.0 $(prefix)/lib%.so.0.0
