@@ -7,11 +7,33 @@ all : $(patsubst %, install-%, $(LIBS))
 
 .PHONY: all
 
-define derp =
-include "$(lib).mk"
-endef
-$(foreach lib,$(LIBS),$(eval $(derp)))
+install-%: $(prefix)/lib%.so $(prefix)/lib%.so.0
+	echo huh?
 
-%.mk:
-	perl makemake.pl > temp
-	mv temp $@
+$(prefix)/lib%.so: $(prefix)/lib%.so.0.0
+	ln -s lib$*.so.0.0 $@
+
+$(prefix)/lib%.so.0: $(prefix)/lib%.so.0.0
+	ln -s lib$*.so.0.0 $@
+
+$(prefix)/lib%.so.0.0: lib%.so.0.0
+	install $< $@
+
+define LINK =
+	$(CC) -Wl,--version-script,systemdsux.version 
+					 -ggdb	
+					 -shared 
+					 -Wl,-son ame, longname, 
+					 -fpic
+					 -o $@
+				   $^
+endef
+
+define \n
+
+endef
+
+LINK:=$(subst ${\n}, ,$(LINK))
+
+lib%.so.0.0: %.c
+	$(LINK)
