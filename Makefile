@@ -1,11 +1,17 @@
 prefix?=/usr/lib
 export prefix
 
-all: ./make
-	./make
+LIBS:=gudev-1.0 systemd
 
-clean: ./make
-	clean=1 ./make
-	rm -f make make.o
+all : $(patsubst %, install-%, $(LIBS))
 
-make: make.o
+.PHONY: all
+
+define derp =
+include "$(lib).mk"
+endef
+$(foreach lib,$(LIBS),$(eval $(derp)))
+
+%.mk:
+	perl makemake.pl > temp
+	mv temp $@
