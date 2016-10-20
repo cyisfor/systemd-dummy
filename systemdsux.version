@@ -1,1 +1,3 @@
-LIBSYSTEMD_209 { };
+LIBSYSTEMD_209 { 
+		global: *;
+};
